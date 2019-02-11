@@ -10,10 +10,10 @@ UINT bytes = RID_BYTES;
 BYTE buffer[RID_BYTES];
 PRAWINPUT raw = (PRAWINPUT)buffer;
 RAWINPUTDEVICE rid;
-INPUT input;
+INPUT input = { 0 };
 CHAR title[MAX_PATH];
 
-BOOL CALLBACK window(HWND h, LPARAM lParam) {
+BOOL CALLBACK Window(HWND h, LPARAM lParam) {
 	if (GetWindow(h, GW_OWNER) != 0 || !IsWindowVisible(h)) return TRUE;
 	GetWindowTextA(h, title, MAX_PATH);
 	size_t l = strlen(title);
@@ -39,7 +39,7 @@ LRESULT CALLBACK WndProc(HWND h, UINT m, WPARAM w, LPARAM l) {
 		if (raw->data.mouse.lLastY > GetSystemMetricsForDpi(SM_CYSCREEN, dpi) / 2) {
 			input.ki.wVk = (raw->data.mouse.lLastX > GetSystemMetricsForDpi(SM_CXSCREEN, dpi) / 2) ?
 				VK_RIGHT : VK_LEFT;
-			EnumWindows(window, NULL);
+			EnumWindows(Window, NULL);
 		}
 		break;
 	case WM_CLOSE: PostQuitMessage(0); break;
@@ -62,10 +62,6 @@ int WINAPI WinMain(HINSTANCE h, HINSTANCE p, LPSTR l, int n) {
 	rid.usUsage = MOUSE;
 
 	input.type = INPUT_KEYBOARD;
-	input.ki.wScan = 0;
-	input.ki.time = 0;
-	input.ki.dwExtraInfo = 0;
-	input.ki.dwFlags = 0;
 
 	RegisterClass(&wc);
 	w = CreateWindow(wc.lpszClassName, NULL, 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, h, NULL);
